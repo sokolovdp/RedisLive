@@ -8,8 +8,8 @@ import argparse
 import time
 from threading import Timer
 
-from .api.util import settings
-from .dataprovider.dataprovider import RedisLiveDataProvider
+from src.api.util import settings
+from src.dataprovider.dataprovider import RedisLiveDataProvider
 
 
 class Monitor(object):
