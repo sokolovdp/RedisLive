@@ -29,7 +29,7 @@ class Monitor(object):
     def __del__(self):
         try:
             self.reset()
-        except:
+        except Exception:
             pass
 
     def reset(self):
@@ -99,8 +99,8 @@ class MonitorThread(threading.Thread):
         stats_provider = RedisLiveDataProvider.get_provider()
         pool = redis.ConnectionPool(host=self.server, port=self.port, db=0,
                                     password=self.password)
-        monitor = Monitor(pool)
-        commands = monitor.monitor()
+        xmonitor = Monitor(pool)
+        commands = xmonitor.monitor()
 
         for command in commands:
             try:
@@ -202,7 +202,7 @@ class InfoThread(threading.Thread):
                 # used_memory_peak not available in older versions of redis
                 try:
                     peak_memory = int(redis_info['used_memory_peak'])
-                except:
+                except Exception:
                     peak_memory = used_memory
 
                 stats_provider.save_memory_info(self.id, current_time,
@@ -241,29 +241,29 @@ class RedisMonitor(object):
         self.threads = []
         self.active = True
 
-    def run(self, duration):
+    def run(self, monitor_duration):
         """Monitors all redis servers defined in the config for a certain number
         of seconds.
 
         Args:
-            duration (int): The number of seconds to monitor for.
+            monitor_duration (int): The number of seconds to monitor for.
         """
         redis_servers = settings.get_redis_servers()
 
         for redis_server in redis_servers:
             redis_password = redis_server.get("password")
 
-            monitor = MonitorThread(redis_server["server"], redis_server["port"], redis_password)
+            redis_monitor = MonitorThread(redis_server["server"], redis_server["port"], redis_password)
             self.threads.append(monitor)
-            monitor.setDaemon(True)
-            monitor.start()
+            redis_monitor.setDaemon(True)
+            redis_monitor.start()
 
             info = InfoThread(redis_server["server"], redis_server["port"], redis_password)
             self.threads.append(info)
             info.setDaemon(True)
             info.start()
 
-        t = Timer(duration, self.stop)
+        t = Timer(monitor_duration, self.stop)
         t.start()
 
         try:

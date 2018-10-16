@@ -187,7 +187,7 @@ class RedisStatsProvider(object):
 
         data = []
         counts = self.conn.hmget(key_name, s)
-        for x in xrange(0, len(counts)):
+        for x in range(0, len(counts)):
             # the default time format string
             time_fmt = '%Y-%m-%d %H:%M:%S'
 

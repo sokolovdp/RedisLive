@@ -21,13 +21,13 @@ if __name__ == "__main__":
 
     # Bootup
     handlers = [
-    (r"/api/servers", ServerListController),
-    (r"/api/info", InfoController),
-    (r"/api/memory", MemoryController),
-    (r"/api/commands", CommandsController),
-    (r"/api/topcommands", TopCommandsController),
-    (r"/api/topkeys", TopKeysController),
-    (r"/(.*)", BaseStaticFileHandler, {"path": "www"})
+        (r"/api/servers", ServerListController),
+        (r"/api/info", InfoController),
+        (r"/api/memory", MemoryController),
+        (r"/api/commands", CommandsController),
+        (r"/api/topcommands", TopCommandsController),
+        (r"/api/topkeys", TopKeysController),
+        (r"/(.*)", BaseStaticFileHandler, {"path": "www"})
     ]
 
     server_settings = {'debug': options.debug}
