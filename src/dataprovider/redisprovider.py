@@ -1,8 +1,9 @@
-from api.util import settings, timeutils
+from src.api.util import settings, timeutils
 from datetime import datetime, timedelta
 import redis
 import json
 import ast
+
 
 class RedisStatsProvider(object):
     """A Redis based persistance to store and fetch stats"""
@@ -159,7 +160,7 @@ class RedisStatsProvider(object):
             key_name = server + ":CommandCountByHour"
 
             t = from_date
-            while t<= to_date:
+            while t <= to_date:
                 field_name = t.strftime('%y%m%d') + ":" + str(t.hour)
                 s.append(field_name)
                 time_stamps.append(str(timeutils.convert_to_epoch(t)))
@@ -186,7 +187,7 @@ class RedisStatsProvider(object):
 
         data = []
         counts = self.conn.hmget(key_name, s)
-        for x in xrange(0,len(counts)):
+        for x in xrange(0, len(counts)):
             # the default time format string
             time_fmt = '%Y-%m-%d %H:%M:%S'
 
@@ -199,7 +200,7 @@ class RedisStatsProvider(object):
 
             # get the count.
             try:
-                if counts[x] is not None: 
+                if counts[x] is not None:
                     count = int(counts[x])
                 else:
                     count = 0
@@ -239,7 +240,6 @@ class RedisStatsProvider(object):
         return self.get_top_counts(server, from_date, to_date, "KeyCount",
                                    "DailyKeyCount")
 
-
     # Helper methods
     def get_top_counts(self, server, from_date, to_date, seconds_key_name,
                        day_key_name, result_count=None):
@@ -270,7 +270,7 @@ class RedisStatsProvider(object):
         # store the set names to use in ZUNIONSTORE in a list
         s = []
 
-        if diff.days > 2 :
+        if diff.days > 2:
             # when difference is over 2 days, no need to check counts for every second
             # Calculate:
             # counts of every second on the start day

@@ -1,6 +1,5 @@
-from api.util import settings
-import sqliteprovider
-import redisprovider
+from src.api.util import settings
+from . import redisprovider, sqliteprovider
 
 
 # TODO: Confirm there's not some implementation detail I've missed, then

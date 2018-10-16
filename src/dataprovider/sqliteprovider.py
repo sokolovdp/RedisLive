@@ -1,7 +1,8 @@
-from api.util import settings
+from src.api.util import settings
 import contextlib
 import sqlite3
 import json
+
 
 class RedisStatsProvider(object):
     """A Sqlite based persistance to store and fetch stats
@@ -73,7 +74,7 @@ class RedisStatsProvider(object):
             query = "SELECT info FROM info WHERE server=?"
             query += "ORDER BY datetime DESC LIMIT 1;"
             for r in c.execute(query, (server,)):
-                return(json.loads(r[0]))
+                return (json.loads(r[0]))
 
     def get_memory_info(self, server, from_date, to_date):
         """Get stats for Memory Consumption between a range of dates
@@ -122,7 +123,7 @@ class RedisStatsProvider(object):
             query_time_fmt = '%Y-%m-%d'
         elif group_by == "hour":
             query_time_fmt = '%Y-%m-%d %H'
-        elif group_by=="minute":
+        elif group_by == "minute":
             query_time_fmt = '%Y-%m-%d %H:%M'
         else:
             query_time_fmt = '%Y-%m-%d %H:%M:%S'

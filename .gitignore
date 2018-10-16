@@ -36,3 +36,10 @@ src/redis-live.conf
 # Vim
 *.sw[po]
 venv
+.idea/
+#.idea/RedisLive.iml
+#.idea/inspectionProfiles/
+#.idea/misc.xml
+#.idea/modules.xml
+#.idea/workspace.xml
+#.idea/

@@ -2,7 +2,7 @@
 	"RedisServers":
 	[ 
 		{
-  			"server": "154.17.59.99",
+  			"server": "127.0.0.1",
   			"port" : 6379
 		},
 		

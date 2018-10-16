@@ -1,14 +1,15 @@
 #! /usr/bin/env python
 
-from api.util import settings
-from dataprovider.dataprovider import RedisLiveDataProvider
-from threading import Timer
 import redis
 import datetime
 import threading
 import traceback
 import argparse
 import time
+from threading import Timer
+
+from .api.util import settings
+from .dataprovider.dataprovider import RedisLiveDataProvider
 
 
 class Monitor(object):
@@ -57,6 +58,7 @@ class Monitor(object):
         """
         while True:
             yield self.parse_response()
+
 
 class MonitorThread(threading.Thread):
     """Runs a thread to execute the MONITOR command against a given Redis server
@@ -125,29 +127,30 @@ class MonitorThread(threading.Thread):
                     # TODO: This is probably more efficient as a list
                     # comprehension wrapped in " ".join()
                     arguments = ""
-                    for x in xrange(3, len(parts)):
+                    for x in range(3, len(parts)):
                         arguments += " " + parts[x].replace('"', '')
                     arguments = arguments.strip()
                 else:
                     arguments = None
 
                 if not command == 'INFO' and not command == 'MONITOR':
-                    stats_provider.save_monitor_command(self.id, 
-                                                        timestamp, 
-                                                        command, 
-                                                        str(keyname), 
+                    stats_provider.save_monitor_command(self.id,
+                                                        timestamp,
+                                                        command,
+                                                        str(keyname),
                                                         str(arguments))
 
-            except Exception, e:
+            except Exception:
                 tb = traceback.format_exc()
-                print "==============================\n"
-                print datetime.datetime.now()
-                print tb
-                print command
-                print "==============================\n"
+                print("==============================\n")
+                print(datetime.datetime.now())
+                print(tb)
+                print(command)
+                print("==============================\n")
 
             if self.stopped():
                 break
+
 
 class InfoThread(threading.Thread):
     """Runs a thread to execute the INFO command against a given Redis server
@@ -187,7 +190,7 @@ class InfoThread(threading.Thread):
         """
         stats_provider = RedisLiveDataProvider.get_provider()
         redis_client = redis.StrictRedis(host=self.server, port=self.port, db=0,
-                                        password=self.password)
+                                         password=self.password)
 
         # process the results from redis
         while not self.stopped():
@@ -202,9 +205,9 @@ class InfoThread(threading.Thread):
                 except:
                     peak_memory = used_memory
 
-                stats_provider.save_memory_info(self.id, current_time, 
+                stats_provider.save_memory_info(self.id, current_time,
                                                 used_memory, peak_memory)
-                stats_provider.save_info_command(self.id, current_time, 
+                stats_provider.save_info_command(self.id, current_time,
                                                  redis_info)
 
                 # databases=[]
@@ -224,12 +227,13 @@ class InfoThread(threading.Thread):
 
                 time.sleep(1)
 
-            except Exception, e:
+            except Exception:
                 tb = traceback.format_exc()
-                print "==============================\n"
-                print datetime.datetime.now()
-                print tb
-                print "==============================\n"
+                print("==============================\n")
+                print(datetime.datetime.now())
+                print(tb)
+                print("==============================\n")
+
 
 class RedisMonitor(object):
 
@@ -246,9 +250,7 @@ class RedisMonitor(object):
         """
         redis_servers = settings.get_redis_servers()
 
-
         for redis_server in redis_servers:
-
             redis_password = redis_server.get("password")
 
             monitor = MonitorThread(redis_server["server"], redis_server["port"], redis_password)
@@ -274,10 +276,10 @@ class RedisMonitor(object):
     def stop(self):
         """Stops the monitor and all associated threads.
         """
-        if args.quiet==False:
-            print "shutting down..."
+        if args.quiet == False:
+            print("shutting down...")
         for t in self.threads:
-                t.stop()
+            t.stop()
         self.active = False
 
 
