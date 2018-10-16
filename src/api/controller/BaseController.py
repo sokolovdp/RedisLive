@@ -1,11 +1,13 @@
-from dataprovider.dataprovider import RedisLiveDataProvider
-import tornado.ioloop
+from src.dataprovider.dataprovider import RedisLiveDataProvider
+
 import tornado.web
 import dateutil.parser
 
 
-class BaseController(tornado.web.RequestHandler):
+# import tornado.ioloop
 
+
+class BaseController(tornado.web.RequestHandler):
     stats_provider = RedisLiveDataProvider.get_provider()
 
     def datetime_to_list(self, datetime):
@@ -26,7 +28,7 @@ class BaseController(tornado.web.RequestHandler):
         """
         average = []
 
-        deviation=1024*1024
+        deviation = 1024 * 1024
 
         start = dateutil.parser.parse(data[0][0])
         end = dateutil.parser.parse(data[-1][0])
@@ -51,11 +53,11 @@ class BaseController(tornado.web.RequestHandler):
                     current_current = current_memory
                 else:
                     if max_memory > current_max or \
-                       current_memory > current_current:
+                            current_memory > current_current:
                         average.pop()
                         average.append([dt, max_memory, current_memory])
-                        current_max=max_memory
-                        current_current=current_memory
+                        current_max = max_memory
+                        current_current = current_memory
         elif hours > 0:
             current_max = 0
             current_current = 0
@@ -67,18 +69,18 @@ class BaseController(tornado.web.RequestHandler):
                 if d.hour != current:
                     current = d.hour
                     average.append([dt, max_memory, current_memory])
-                    current_max=max_memory
-                    current_current=current_memory
-                    keep_flag=False
+                    current_max = max_memory
+                    current_current = current_memory
+                    keep_flag = False
                 elif abs(max_memory - current_max) > deviation or \
-                     abs(current_memory - current_current) > deviation:
-                    #average.pop()
+                        abs(current_memory - current_current) > deviation:
+                    # average.pop()
                     average.append([dt, max_memory, current_memory])
                     current_max = max_memory
                     current_current = current_memory
                     keep_flag = True
                 elif max_memory > current_max or \
-                     current_memory > current_current:
+                        current_memory > current_current:
                     if keep_flag != True:
                         average.pop()
                     average.append([dt, max_memory, current_memory])
@@ -99,19 +101,19 @@ class BaseController(tornado.web.RequestHandler):
                     current_current = current_memory
                     keep_flag = False
                 elif abs(max_memory - current_max) > deviation or \
-                     abs(current_memory - current_current) > deviation:
-                    #average.pop()
+                        abs(current_memory - current_current) > deviation:
+                    # average.pop()
                     average.append([dt, max_memory, current_memory])
                     current_max = max_memory
                     current_current = current_memory
                     keep_flag = True
                 elif max_memory > current_max or \
-                    current_memory > current_current:
-                    if keep_flag!=True:
+                        current_memory > current_current:
+                    if keep_flag != True:
                         average.pop()
-                    average.append([dt,max_memory,current_memory])
-                    current_max=max_memory
-                    current_current=current_memory
-                    keep_flag=False
+                    average.append([dt, max_memory, current_memory])
+                    current_max = max_memory
+                    current_current = current_memory
+                    keep_flag = False
 
         return average

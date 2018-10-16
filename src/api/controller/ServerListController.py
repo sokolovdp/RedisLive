@@ -1,5 +1,6 @@
 from BaseController import BaseController
-from api.util import settings
+from src.api.util import settings
+
 
 class ServerListController(BaseController):
 
@@ -16,7 +17,7 @@ class ServerListController(BaseController):
 
         for server in redis_servers:
             if 'password' not in server:
-              server['password'] = None
+                server['password'] = None
 
             server_id = "%(server)s:%(port)s" % server
             s = dict(server=server['server'], port=server['port'], password=server['password'], id=server_id)
