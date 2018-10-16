@@ -1,4 +1,4 @@
-from BaseController import BaseController
+from .BaseController import BaseController
 from src.api.util import settings
 
 
