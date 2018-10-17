@@ -46,7 +46,7 @@ class Monitor(object):
         if self.connection is None:
             self.connection = self.connection_pool.get_connection('monitor', None)
         self.connection.send_command("monitor")
-        return str(self.listen())
+        return self.listen()
 
     def parse_response(self):
         """Parses the most recent responses from the current connection.
@@ -67,7 +67,7 @@ class MonitorThread(threading.Thread):
     """
 
     def __init__(self, server, port, password=None):
-        """Initializes a MontitorThread.
+        """Initializes a MonitorThread.
 
         Args:
             server (str): The host name or IP of the Redis server to monitor.
@@ -99,8 +99,8 @@ class MonitorThread(threading.Thread):
         stats_provider = RedisLiveDataProvider.get_provider()
         pool = redis.ConnectionPool(host=self.server, port=self.port, db=0,
                                     password=self.password)
-        xmonitor = Monitor(pool)
-        commands = xmonitor.monitor()
+        redis_monitor = Monitor(pool)
+        commands = redis_monitor.monitor()
 
         for command in commands:
 
@@ -257,32 +257,32 @@ class RedisMonitor(object):
             redis_password = redis_server.get("password")
 
             redis_monitor = MonitorThread(redis_server["server"], redis_server["port"], redis_password)
-            self.threads.append(monitor)
             redis_monitor.setDaemon(True)
+            self.threads.append(redis_monitor)
             redis_monitor.start()
 
             info = InfoThread(redis_server["server"], redis_server["port"], redis_password)
-            self.threads.append(info)
             info.setDaemon(True)
+            self.threads.append(info)
             info.start()
 
-        t = Timer(monitor_duration, self.stop)
-        t.start()
+        run_timer = Timer(monitor_duration, self.stop)
+        run_timer.start()
 
         try:
             while self.active:
                 pass
         except (KeyboardInterrupt, SystemExit):
             self.stop()
-            t.cancel()
+            run_timer.cancel()
 
     def stop(self):
         """Stops the monitor and all associated threads.
         """
-        if args.quiet == False:
-            print("shutting down...")
-        for t in self.threads:
-            t.stop()
+        if not args.quiet:
+            print("shutting down redis monitor...")
+        for thread in self.threads:
+            thread.stop()
         self.active = False
 
 
@@ -293,7 +293,7 @@ if __name__ == '__main__':
                         help="duration to run the monitor command (in seconds)",
                         required=True)
     parser.add_argument('--quiet',
-                        help="do  not write anything to standard output",
+                        help="do not write anything to standard output",
                         required=False,
                         action='store_true')
     args = parser.parse_args()
