@@ -46,7 +46,7 @@ class Monitor(object):
         if self.connection is None:
             self.connection = self.connection_pool.get_connection('monitor', None)
         self.connection.send_command("monitor")
-        return self.listen()
+        return str(self.listen())
 
     def parse_response(self):
         """Parses the most recent responses from the current connection.
@@ -103,6 +103,9 @@ class MonitorThread(threading.Thread):
         commands = xmonitor.monitor()
 
         for command in commands:
+
+            print('\n\n>>>>>>>>>>>>>>>>>>>> command=', command)
+
             try:
                 parts = command.split(" ")
 
