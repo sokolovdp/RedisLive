@@ -100,12 +100,10 @@ class MonitorThread(threading.Thread):
         pool = redis.ConnectionPool(host=self.server, port=self.port, db=0,
                                     password=self.password)
         redis_monitor = Monitor(pool)
-        commands = redis_monitor.monitor()
+        bytes_input = redis_monitor.monitor()
 
-        for command in commands:
-
-            print('\n\n>>>>>>>>>>>>>>>>>>>> command=', command)
-
+        for bytes_command in bytes_input:
+            command = bytes_command.decode()
             try:
                 parts = command.split(" ")
 
@@ -192,8 +190,7 @@ class InfoThread(threading.Thread):
         """Does all the work.
         """
         stats_provider = RedisLiveDataProvider.get_provider()
-        redis_client = redis.StrictRedis(host=self.server, port=self.port, db=0,
-                                         password=self.password)
+        redis_client = redis.StrictRedis(host=self.server, port=self.port, db=0, password=self.password)
 
         # process the results from redis
         while not self.stopped():
@@ -208,10 +205,8 @@ class InfoThread(threading.Thread):
                 except Exception:
                     peak_memory = used_memory
 
-                stats_provider.save_memory_info(self.id, current_time,
-                                                used_memory, peak_memory)
-                stats_provider.save_info_command(self.id, current_time,
-                                                 redis_info)
+                stats_provider.save_memory_info(self.id, current_time, used_memory, peak_memory)
+                stats_provider.save_info_command(self.id, current_time, redis_info)
 
                 # databases=[]
                 # for key in sorted(redis_info.keys()):
