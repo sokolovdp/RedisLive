@@ -4,7 +4,7 @@ import sqlite3
 import json
 
 
-class RedisStatsProvider:
+class StatsProvider:
     """A Sqlite based persistance to store and fetch stats
     """
 

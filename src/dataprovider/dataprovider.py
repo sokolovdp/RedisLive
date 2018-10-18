@@ -1,9 +1,7 @@
 from src.api.util import settings
-from . import redisprovider, sqliteprovider, dummyprovider
+from . import redisprovider, sqliteprovider, dummyprovider, memcachedprovider
 
 
-# TODO: Confirm there's not some implementation detail I've missed, then
-# ditch the classes here.
 class RedisLiveDataProvider:
 
     @staticmethod
@@ -16,8 +14,10 @@ class RedisLiveDataProvider:
 
         # FIXME: Should use a global variable for "redis" here.
         if data_store_type == "redis":
-            return redisprovider.RedisStatsProvider()
+            return redisprovider.StatsProvider()
         elif data_store_type == "sqllite":
-            return sqliteprovider.RedisStatsProvider()
+            return sqliteprovider.StatsProvider()
+        elif data_store_type == "memcached":
+            return memcachedprovider.StatsProvider()
         else:
-            return dummyprovider.DummyProvider()
+            return dummyprovider.StatsProvider()

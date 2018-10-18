@@ -132,21 +132,11 @@ class MonitorThread(threading.Thread):
                 else:
                     keyname = None
 
-                # if len(parts) > 3:
-                #     # This is probably more efficient as a list comprehension wrapped in " ".join()
-                #     arguments = ""
-                #     for x in range(3, len(parts)):
-                #         arguments += " " + parts[x].replace('"', '')
-                #     arguments = arguments.strip()
-                # else:
-                #     arguments = None
-                #
-
                 if not command == 'INFO' and not command == 'MONITOR':
                     stats_provider.save_monitor_command(self.id,
                                                         timestamp,
                                                         command,
-                                                        str(keyname))
+                                                        keyname)
             except Exception:
                 error_handler(traceback.format_exc(), command)
 

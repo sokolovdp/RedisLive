@@ -4,7 +4,7 @@ from datetime import datetime
 import json
 
 
-class DummyProvider:
+class StatsProvider:
     """A simple file based persistence to store and fetch stats
     """
 

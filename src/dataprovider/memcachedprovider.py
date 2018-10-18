@@ -1,4 +1,3 @@
-import json
 import ast
 from datetime import datetime, timedelta
 
@@ -8,11 +7,10 @@ from pymemcache import serde
 from src.api.util import settings, timeutils
 
 
-class MemcachedStatsProvider:
+class StatsProvider:
     """A memcached based persistence to store and fetch stats"""
 
     def __init__(self):
-        # redis server to use to store stats
         stats_server = settings.get_memcached_stats_server()
         self.server = stats_server["server"]
         self.port = stats_server["port"]
@@ -38,7 +36,6 @@ class MemcachedStatsProvider:
                 "peak": peak
                 }
         self.client.set(key, data)
-        print("key=", key, "data=", data)
 
     def save_info_command(self, server, timestamp, info):
         """Save Redis info command dump
@@ -53,7 +50,6 @@ class MemcachedStatsProvider:
                 'info': info
                 }
         self.client.set(key, data)
-        print("key=", key, "data=", data)
 
     def increment_counter(self, key):
         result = self.client.incr(key, 1)
@@ -136,7 +132,7 @@ class MemcachedStatsProvider:
 
         memory_data = []
         for row in rows:
-            # TODO: Check to see if there's not a better way to do this. Using
+            # Check to see if there's not a better way to do this. Using
             # eval feels like it could be wrong/dangerous... but that's just a
             # feeling.
 
