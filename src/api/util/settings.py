@@ -33,3 +33,8 @@ def get_sqlite_stats_store():
 def get_dummy_stats_store():
     config = get_settings()
     return config["DummyStatsStore"]["filename"]
+
+
+def get_memcached_stats_server():
+    config = get_settings()
+    return config["MemcachedStatsServer"]

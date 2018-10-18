@@ -125,8 +125,7 @@ class MonitorThread(threading.Thread):
                     keyname = None
 
                 if len(parts) > 3:
-                    # TODO: This is probably more efficient as a list
-                    # comprehension wrapped in " ".join()
+                    # TODO: This is probably more efficient as a list comprehension wrapped in " ".join()
                     arguments = ""
                     for x in range(3, len(parts)):
                         arguments += " " + parts[x].replace('"', '')

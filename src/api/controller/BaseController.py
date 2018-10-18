@@ -2,8 +2,6 @@ from src.dataprovider.dataprovider import RedisLiveDataProvider
 
 import tornado.web
 import dateutil.parser
-
-
 # import tornado.ioloop
 
 

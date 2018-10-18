@@ -6,13 +6,21 @@
     }
   ],
   "DataStoreType": "dummy",
+
   "RedisStatsServer": {
     "server": "redis instance url",
     "port": 6379
   },
+
   "SqliteStatsStore": {
     "path": "to your sql lite file"
   },
+
+  "MemcachedStatsServer": {
+    "server": "localhost",
+    "port": 11211
+  },
+
   "DummyStatsStore": {
     "filename": "redis_live_stats.txt"
   }
