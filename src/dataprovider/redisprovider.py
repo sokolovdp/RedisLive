@@ -5,7 +5,7 @@ import json
 import ast
 
 
-class RedisStatsProvider(object):
+class RedisStatsProvider:
     """A Redis based persistance to store and fetch stats"""
 
     def __init__(self):

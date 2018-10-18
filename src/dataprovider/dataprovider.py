@@ -1,10 +1,10 @@
 from src.api.util import settings
-from . import redisprovider, sqliteprovider
+from . import redisprovider, sqliteprovider, dummyprovider
 
 
 # TODO: Confirm there's not some implementation detail I've missed, then
 # ditch the classes here.
-class RedisLiveDataProvider(object):
+class RedisLiveDataProvider:
 
     @staticmethod
     def get_provider():
@@ -17,5 +17,7 @@ class RedisLiveDataProvider(object):
         # FIXME: Should use a global variable for "redis" here.
         if data_store_type == "redis":
             return redisprovider.RedisStatsProvider()
-        else:
+        elif data_store_type == "sqllite":
             return sqliteprovider.RedisStatsProvider()
+        else:
+            return dummyprovider.DummyProvider()

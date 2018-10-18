@@ -12,7 +12,7 @@ from src.api.util import settings
 from src.dataprovider.dataprovider import RedisLiveDataProvider
 
 
-class Monitor(object):
+class Monitor:
     """Monitors a given Redis server using the MONITOR command.
     """
 
@@ -140,7 +140,6 @@ class MonitorThread(threading.Thread):
                                                         command,
                                                         str(keyname),
                                                         str(arguments))
-
             except Exception:
                 tb = traceback.format_exc()
                 print("==============================\n")
@@ -233,7 +232,7 @@ class InfoThread(threading.Thread):
                 print("==============================\n")
 
 
-class RedisMonitor(object):
+class RedisMonitor:
 
     def __init__(self):
         self.threads = []

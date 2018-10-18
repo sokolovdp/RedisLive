@@ -36,7 +36,7 @@ pip-log.txt
 *.sw[po]
 venv
 .idea
-.idea/vcs.xml
+src/redis_live_stats.txt
 #.idea/RedisLive.iml
 #.idea/inspectionProfiles/
 #.idea/misc.xml
