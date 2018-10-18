@@ -1,13 +1,15 @@
-from src.api.util import settings, timeutils
-from datetime import datetime, timedelta
-from pymemcache.client import base
-from pymemcache import serde
 import json
 import ast
+from datetime import datetime, timedelta
+
+from pymemcache.client.base import Client
+from pymemcache import serde
+
+from src.api.util import settings, timeutils
 
 
 class MemcachedStatsProvider:
-    """A Redis based persistance to store and fetch stats"""
+    """A memcached based persistance to store and fetch stats"""
 
     def __init__(self):
         # redis server to use to store stats
@@ -15,11 +17,10 @@ class MemcachedStatsProvider:
         self.server = stats_server["server"]
         self.port = stats_server["port"]
         self.password = stats_server.get("password")
-        self.client = base.Client(
+        self.client = Client(
             (self.server, self.port),
             serializer=serde.python_memcache_serializer,
-            deserializer=serde.python_memcache_deserializer,
-            allow_unicode_keys=True
+            deserializer=serde.python_memcache_deserializer
         )
 
     def save_memory_info(self, server, timestamp, used, peak):
@@ -31,10 +32,12 @@ class MemcachedStatsProvider:
             used (int): Used memory value.
             peak (int): Peak memory value.
         """
+        key = server + ":Memory"
         data = {"timestamp": str(timeutils.convert_to_epoch(timestamp)),
                 "used": used,
-                "peak": peak}
-        self.client.set(server + ":Memory", data)
+                "peak": peak
+                }
+        self.client.set(key, data)
 
     def save_info_command(self, server, timestamp, info):
         """Save Redis info command dump
@@ -44,7 +47,16 @@ class MemcachedStatsProvider:
             timestamp (datetime): Timestamp.
             info (dict): The result of a Redis INFO command.
         """
-        self.client.set(server + ":Info", info)
+        key = server + ":Info"
+        data = {'timestamp': str(timeutils.convert_to_epoch(timestamp)),
+                'info': info
+                }
+        self.client.set(key, data)
+
+    def increment_counter(self, key):
+        result = self.client.incr(key, 1)
+        if result is None:
+            self.client.set(key, 1)
 
     def save_monitor_command(self, server, timestamp, command, keyname, argument):
         """save information about every command
@@ -60,45 +72,40 @@ class MemcachedStatsProvider:
         epoch = str(timeutils.convert_to_epoch(timestamp))
         current_date = timestamp.strftime('%y%m%d')
 
-        # start a redis MULTI/EXEC transaction
-        pipeline = self.conn.pipeline()
-
         # store top command and key counts in sorted set for every second
-        # top N are easily available from sorted set in redis
+        # top N are easily available from sorted set in memcached
         # also keep a sorted set for every day
-        # switch to daily stats when stats requsted are for a longer time period        
+        # switch to daily stats when stats requested are for a longer time period
 
-        command_count_key = server + ":CommandCount:" + epoch
-        pipeline.zincrby(command_count_key, command, 1)
+        command_count_key = "{}:CommandCount:{}:{}".format(server, command, epoch)
+        self.increment_counter(command_count_key)
 
-        command_count_key = server + ":DailyCommandCount:" + current_date
-        pipeline.zincrby(command_count_key, command, 1)
+        command_count_key = "{}:DailyCommandCount:{}:{}".format(server, command, current_date)
+        self.increment_counter(command_count_key)
 
-        key_count_key = server + ":KeyCount:" + epoch
-        pipeline.zincrby(key_count_key, keyname, 1)
+        command_count_key = "{}:CommandCountBySecond:{}".format(server, epoch)
+        self.increment_counter(command_count_key)
 
-        key_count_key = server + ":DailyKeyCount:" + current_date
-        pipeline.zincrby(key_count_key, keyname, 1)
+        command_count_key = server + "{}:CommandCountByMinute:{}:{}:{}".format(server,
+                                                                               current_date,
+                                                                               str(timestamp.hour),
+                                                                               str(timestamp.minute))
+        self.increment_counter(command_count_key)
 
-        # keep aggregate command in a hash
-        command_count_key = server + ":CommandCountBySecond"
-        pipeline.hincrby(command_count_key, epoch, 1)
+        command_count_key = server + "{}:CommandCountByHour:{}:{}".format(server,
+                                                                          current_date,
+                                                                          str(timestamp.hour))
+        self.increment_counter(command_count_key)
 
-        command_count_key = server + ":CommandCountByMinute"
-        field_name = current_date + ":" + str(timestamp.hour) + ":"
-        field_name += str(timestamp.minute)
-        pipeline.hincrby(command_count_key, field_name, 1)
+        command_count_key = server + "{}:CommandCountByDay:{}".format(server,
+                                                                      current_date)
+        self.increment_counter(command_count_key)
 
-        command_count_key = server + ":CommandCountByHour"
-        field_name = current_date + ":" + str(timestamp.hour)
-        pipeline.hincrby(command_count_key, field_name, 1)
+        key_count_key = "{}:KeyCount:{}".format(server, epoch)
+        self.increment_counter(key_count_key)
 
-        command_count_key = server + ":CommandCountByDay"
-        field_name = current_date
-        pipeline.hincrby(command_count_key, field_name, 1)
-
-        # commit transaction to redis
-        pipeline.execute()
+        key_count_key = "{}:DailyKeyCount:{}".format(server, current_date)
+        self.increment_counter(key_count_key)
 
     def get_info(self, server):
         """Get info about the server
@@ -106,10 +113,12 @@ class MemcachedStatsProvider:
         Args:
             server (str): The server ID
         """
-        info = self.client.get(server + ":Info")
-        # FIXME: If the collector has never been run we get a 500 here. `None` is not a valid type to pass to json.loads.
-        info = json.loads(info)
-        return info
+        key = server + ":Info"
+        info = self.client.get(key)
+        if info is not None:
+            return info
+        else:
+            return {'timestamp': '', 'info': ''}
 
     def get_memory_info(self, server, from_date, to_date):
         """Get stats for Memory Consumption between a range of dates
@@ -256,6 +265,7 @@ class MemcachedStatsProvider:
             to_date (datetime): Get stats to this date.
             seconds_key_name (str): The key for stats at second resolution.
             day_key_name (str): The key for stats at daily resolution.
+            result_count (int): Max counts number
 
         Kwargs:
             result_count (int): The number of results to return. Default: 10
