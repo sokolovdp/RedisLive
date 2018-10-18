@@ -1,11 +1,11 @@
 
 from src.api.util import settings, timeutils
-from datetime import datetime, timedelta
+from datetime import datetime
 import json
 
 
 class DummyProvider:
-    """A Sqlite based persistance to store and fetch stats
+    """A simple file based persistence to store and fetch stats
     """
 
     def __init__(self):
@@ -40,8 +40,7 @@ class DummyProvider:
                 "info": json.dumps(info)}
         self.file.write(json.dumps(data) + '\n')
 
-    def save_monitor_command(self, server, timestamp, command, keyname,
-                             argument):
+    def save_monitor_command(self, server, timestamp, command, keyname):
         """save information about every command
 
         Args:
@@ -54,8 +53,7 @@ class DummyProvider:
         data = {"server": server,
                 "timestamp": str(timeutils.convert_to_epoch(timestamp)),
                 "command": command,
-                "keyname": keyname,
-                "argument": argument}
+                "keyname": keyname}
         self.file.write(json.dumps(data) + '\n')
 
     def get_info(self, server):

@@ -40,8 +40,7 @@ class RedisStatsProvider:
         """
         self.conn.set(server + ":Info", json.dumps(info))
 
-    def save_monitor_command(self, server, timestamp, command, keyname,
-                             argument):
+    def save_monitor_command(self, server, timestamp, command, keyname):
         """save information about every command
 
         Args:

@@ -9,7 +9,7 @@ from src.api.util import settings, timeutils
 
 
 class MemcachedStatsProvider:
-    """A memcached based persistance to store and fetch stats"""
+    """A memcached based persistence to store and fetch stats"""
 
     def __init__(self):
         # redis server to use to store stats
@@ -32,12 +32,13 @@ class MemcachedStatsProvider:
             used (int): Used memory value.
             peak (int): Peak memory value.
         """
-        key = server + ":Memory"
+        key = "{}:Memory".format(server)
         data = {"timestamp": str(timeutils.convert_to_epoch(timestamp)),
                 "used": used,
                 "peak": peak
                 }
         self.client.set(key, data)
+        print("key=", key, "data=", data)
 
     def save_info_command(self, server, timestamp, info):
         """Save Redis info command dump
@@ -47,18 +48,19 @@ class MemcachedStatsProvider:
             timestamp (datetime): Timestamp.
             info (dict): The result of a Redis INFO command.
         """
-        key = server + ":Info"
+        key = "{}:Info".format(server)
         data = {'timestamp': str(timeutils.convert_to_epoch(timestamp)),
                 'info': info
                 }
         self.client.set(key, data)
+        print("key=", key, "data=", data)
 
     def increment_counter(self, key):
         result = self.client.incr(key, 1)
         if result is None:
             self.client.set(key, 1)
 
-    def save_monitor_command(self, server, timestamp, command, keyname, argument):
+    def save_monitor_command(self, server, timestamp, command, keyname):
         """save information about every command
 
         Args:
@@ -101,10 +103,10 @@ class MemcachedStatsProvider:
                                                                       current_date)
         self.increment_counter(command_count_key)
 
-        key_count_key = "{}:KeyCount:{}".format(server, epoch)
+        key_count_key = "{}:KeyCount:{}:{}".format(server, keyname, epoch)
         self.increment_counter(key_count_key)
 
-        key_count_key = "{}:DailyKeyCount:{}".format(server, current_date)
+        key_count_key = "{}:DailyKeyCount:{}:{}".format(server, keyname, current_date)
         self.increment_counter(key_count_key)
 
     def get_info(self, server):
@@ -128,23 +130,22 @@ class MemcachedStatsProvider:
             from_date (datetime): Get memory info from this date onwards.
             to_date (datetime): Get memory info up to this date.
         """
-        memory_data = []
-        start = timeutils.convert_to_epoch(from_date)
-        end = timeutils.convert_to_epoch(to_date)
-        rows = self.client.get(server + ":Memory")
 
+        key = "{}:Memory".format(server)
+        rows = self.client.get(key)
+
+        memory_data = []
         for row in rows:
             # TODO: Check to see if there's not a better way to do this. Using
             # eval feels like it could be wrong/dangerous... but that's just a
             # feeling.
-            row = ast.literal_eval(row)
-            parts = []
 
+            row = ast.literal_eval(row)
             # convert the timestamp
             timestamp = datetime.fromtimestamp(int(row['timestamp']))
-            timestamp = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+            timestamp_string = timestamp.strftime('%Y-%m-%d %H:%M:%S')
 
-            memory_data.append([timestamp, row['peak'], row['used']])
+            memory_data.append([timestamp_string, row['peak'], row['used']])
 
         return memory_data
 
@@ -159,7 +160,6 @@ class MemcachedStatsProvider:
         """
         s = []
         time_stamps = []
-        key_name = ""
 
         if group_by == "day":
             key_name = server + ":CommandCountByDay"

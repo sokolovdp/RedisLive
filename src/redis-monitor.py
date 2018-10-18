@@ -60,6 +60,14 @@ class Monitor:
             yield self.parse_response()
 
 
+def error_handler(trace_back, command):
+    print("\n==============================\n")
+    print(datetime.datetime.now())
+    print(trace_back)
+    print(command)
+    print("==============================\n")
+
+
 class MonitorThread(threading.Thread):
     """Runs a thread to execute the MONITOR command against a given Redis server
     and store the resulting aggregated statistics in the configured stats
@@ -124,28 +132,23 @@ class MonitorThread(threading.Thread):
                 else:
                     keyname = None
 
-                if len(parts) > 3:
-                    # TODO: This is probably more efficient as a list comprehension wrapped in " ".join()
-                    arguments = ""
-                    for x in range(3, len(parts)):
-                        arguments += " " + parts[x].replace('"', '')
-                    arguments = arguments.strip()
-                else:
-                    arguments = None
+                # if len(parts) > 3:
+                #     # This is probably more efficient as a list comprehension wrapped in " ".join()
+                #     arguments = ""
+                #     for x in range(3, len(parts)):
+                #         arguments += " " + parts[x].replace('"', '')
+                #     arguments = arguments.strip()
+                # else:
+                #     arguments = None
+                #
 
                 if not command == 'INFO' and not command == 'MONITOR':
                     stats_provider.save_monitor_command(self.id,
                                                         timestamp,
                                                         command,
-                                                        str(keyname),
-                                                        str(arguments))
+                                                        str(keyname))
             except Exception:
-                tb = traceback.format_exc()
-                print("==============================\n")
-                print(datetime.datetime.now())
-                print(tb)
-                print(command)
-                print("==============================\n")
+                error_handler(traceback.format_exc(), command)
 
             if self.stopped():
                 break
@@ -190,45 +193,24 @@ class InfoThread(threading.Thread):
         stats_provider = RedisLiveDataProvider.get_provider()
         redis_client = redis.StrictRedis(host=self.server, port=self.port, db=0, password=self.password)
 
-        # process the results from redis
         while not self.stopped():
             try:
                 redis_info = redis_client.info()
                 current_time = datetime.datetime.now()
                 used_memory = int(redis_info['used_memory'])
 
-                # used_memory_peak not available in older versions of redis
                 try:
                     peak_memory = int(redis_info['used_memory_peak'])
-                except Exception:
+                except Exception:  # used_memory_peak not available in older versions of redis
                     peak_memory = used_memory
 
                 stats_provider.save_memory_info(self.id, current_time, used_memory, peak_memory)
                 stats_provider.save_info_command(self.id, current_time, redis_info)
 
-                # databases=[]
-                # for key in sorted(redis_info.keys()):
-                #     if key.startswith("db"):
-                #         database = redis_info[key]
-                #         database['name']=key
-                #         databases.append(database)
-
-                # expires=0
-                # persists=0
-                # for database in databases:
-                #     expires+=database.get("expires")
-                #     persists+=database.get("keys")-database.get("expires")
-
-                # stats_provider.SaveKeysInfo(self.id, current_time, expires, persists)
-
                 time.sleep(1)
 
             except Exception:
-                tb = traceback.format_exc()
-                print("==============================\n")
-                print(datetime.datetime.now())
-                print(tb)
-                print("==============================\n")
+                error_handler(traceback.format_exc(), " InfoThread error !")
 
 
 class RedisMonitor:

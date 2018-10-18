@@ -40,8 +40,7 @@ class RedisStatsProvider:
                   server)
         self._retry_query(query, values)
 
-    def save_monitor_command(self, server, timestamp, command, keyname,
-                             argument):
+    def save_monitor_command(self, server, timestamp, command, keyname):
         """save information about every command
 
         Args:
