@@ -51,10 +51,18 @@ class StatsProvider:
                 }
         self.client.set(key, data)
 
-    def increment_counter(self, key):
+    def increment_counter(self, key=None):
         result = self.client.incr(key, 1)
         if result is None:
             self.client.set(key, 1)
+
+    def add_timestamp(self, key=None, time=None):
+        values_list = self.client.get(key)
+        if values_list is None:
+            self.client.set(key, [time])
+        else:
+            values_list.append(time)
+            self.client.set(key, values_list)
 
     def save_monitor_command(self, server, timestamp, command, keyname):
         """save information about every command
@@ -81,29 +89,31 @@ class StatsProvider:
         command_count_key = "{}:DailyCommandCount:{}:{}".format(server, command, current_date)
         self.increment_counter(command_count_key)
 
-        command_count_key = "{}:CommandCountBySecond:{}".format(server, epoch)
-        self.increment_counter(command_count_key)
-
-        command_count_key = server + "{}:CommandCountByMinute:{}:{}:{}".format(server,
-                                                                               current_date,
-                                                                               str(timestamp.hour),
-                                                                               str(timestamp.minute))
-        self.increment_counter(command_count_key)
-
-        command_count_key = server + "{}:CommandCountByHour:{}:{}".format(server,
-                                                                          current_date,
-                                                                          str(timestamp.hour))
-        self.increment_counter(command_count_key)
-
-        command_count_key = server + "{}:CommandCountByDay:{}".format(server,
-                                                                      current_date)
-        self.increment_counter(command_count_key)
-
         key_count_key = "{}:KeyCount:{}:{}".format(server, keyname, epoch)
         self.increment_counter(key_count_key)
 
         key_count_key = "{}:DailyKeyCount:{}:{}".format(server, keyname, current_date)
         self.increment_counter(key_count_key)
+
+
+        command_count_key = "{}:CommandCountBySecond".format(server)
+        self.add_timestamp(key=command_count_key, time=epoch)
+
+        command_count_key = "{}:CommandCountByMinute".format(server)
+        time = "{}:{}:{}".format(current_date,
+                                 str(timestamp.hour),
+                                 str(timestamp.minute))
+        self.add_timestamp(command_count_key, time)
+
+        command_count_key = "{}:CommandCountByHour".format(server)
+        time = "{}:{}".format(current_date,
+                              str(timestamp.hour))
+        self.add_timestamp(command_count_key, time)
+
+        command_count_key = server + "{}:CommandCountByDay:{}".format(server,
+                                                                      current_date)
+        self.add_timestamp(command_count_key)
+
 
     def get_info(self, server):
         """Get info about the server
