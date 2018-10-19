@@ -35,11 +35,12 @@ pip-log.txt
 # Vim
 *.sw[po]
 
+redislive.sqlite
+*.sqlite
+
 venv/
 .idea/
 src/db/
-*.sqlite
-redislive.sqlite
 src/redis_live_stats.txt
 src/redis-live-conf.json
 #.idea/RedisLive.iml
