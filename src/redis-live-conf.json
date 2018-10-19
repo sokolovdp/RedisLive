@@ -6,7 +6,7 @@
     }
   ],
 
-  "DataStoreType": "memcached",
+  "DataStoreType": "sqllite",
 
   "RedisStatsServer": {
     "server": "redis/instance/url",
@@ -14,7 +14,7 @@
   },
 
   "SqliteStatsStore": {
-    "path": "to your sql lite file"
+    "path": "/home/dmitrii/ws/proj/RedisLive/src/db/redislive.sqlite"
   },
 
   "MemcachedStatsServer": {

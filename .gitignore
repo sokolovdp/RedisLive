@@ -34,8 +34,9 @@ pip-log.txt
 
 # Vim
 *.sw[po]
-venv
-.idea
+venv/
+.idea/
+db/
 src/redis_live_stats.txt
 #.idea/RedisLive.iml
 #.idea/inspectionProfiles/
@@ -43,3 +44,4 @@ src/redis_live_stats.txt
 #.idea/modules.xml
 #.idea/workspace.xml
 #.idea/
+
