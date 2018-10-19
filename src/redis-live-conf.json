@@ -9,7 +9,7 @@
   "DataStoreType": "sqllite",
 
   "RedisStatsServer": {
-    "server": "redis/instance/url",
+    "server": "redis instance url",
     "port": 6379
   },
 
