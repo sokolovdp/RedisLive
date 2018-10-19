@@ -11,15 +11,11 @@ def distance(a, b):
 
 
 def point_line_distance(point, start, end):
-    if (start == end):
+    if start == end:
         return distance(point, start)
     else:
-        n = abs(
-            (end[0] - start[0]) * (start[1] - point[1]) - (start[0] - point[0]) * (end[1] - start[1])
-        )
-        d = sqrt(
-            (end[0] - start[0]) ** 2 + (end[1] - start[1]) ** 2
-        )
+        n = abs((end[0] - start[0]) * (start[1] - point[1]) - (start[0] - point[0]) * (end[1] - start[1]))
+        d = sqrt((end[0] - start[0]) ** 2 + (end[1] - start[1]) ** 2)
         return n / d
 
 

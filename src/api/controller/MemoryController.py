@@ -24,10 +24,6 @@ class MemoryController(BaseController):
             end = dateutil.parser.parse(to_date)
 
         combined_data = []
-        # TODO: These variables aren't currently used; should they be removed?
-        prev_max = 0
-        prev_current = 0
-        counter = 0
 
         for data in self.stats_provider.get_memory_info(server, start, end):
             combined_data.append([data[0], data[1], data[2]])

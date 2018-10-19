@@ -23,7 +23,7 @@ class InfoController(BaseController):
         for database in databases:
             total_keys += database.get("keys")
 
-        if (total_keys == 0):
+        if total_keys == 0:
             databases = [{"name": "db0", "keys": "0", "expires": "0"}]
 
         redis_info['databases'] = databases
@@ -55,7 +55,7 @@ class InfoController(BaseController):
                 val = '1h'
             else:
                 val = num + "m"
-        elif (seconds < 60 * 60 * 24):
+        elif seconds < 60 * 60 * 24:
             # if the number is less than 1 day
             num = self.rounded_number(seconds, 60 * 60)
             if num == "24":
@@ -76,15 +76,15 @@ class InfoController(BaseController):
         """
         if number < 1000:
             return number
-        elif number >= 1000 and number < 1000000:
+        elif 1000 <= number < 1000000:
             num = self.rounded_number(number, 1000)
             val = "1M" if num == "1000" else num + "K"
             return val
-        elif number >= 1000000 and number < 1000000000:
+        elif 1000000 <= number < 1000000000:
             num = self.rounded_number(number, 1000000)
             val = "1B" if num == "1000" else num + "M"
             return val
-        elif number >= 1000000000 and number < 1000000000000:
+        elif 1000000000 <= number < 1000000000000:
             num = self.rounded_number(number, 1000000000)
             val = "1T" if num == "1000" else num + "B"
             return val

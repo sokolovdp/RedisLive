@@ -45,8 +45,7 @@ class CommandsController(BaseController):
             group_by = "second"
 
         combined_data = []
-        stats = self.stats_provider.get_command_stats(server, start, end,
-                                                      group_by)
+        stats = self.stats_provider.get_command_stats(server, start, end, group_by)
         for data in stats:
             combined_data.append([data[1], data[0]])
 

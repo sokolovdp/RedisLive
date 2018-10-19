@@ -18,7 +18,6 @@ class BaseController(tornado.web.RequestHandler):
         # don't return the last two fields, we don't want them.
         return tuple(parsed_date.timetuple())[:-2]
 
-    # todo : fix this
     def average_data(self, data):
         """Averages data.
 
