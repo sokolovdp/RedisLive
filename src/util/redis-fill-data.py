@@ -26,7 +26,7 @@ def monitor():
             for z in range(1, x):
                 redisClient.hset("HashKey:" + 'x', x, x)
         elif y == 5:
-            for z in range(1, (x / 2) + 2):
+            for z in range(1, int((x / 2)) + 2):
                 redisClient.setex("Key:" + 'x', 1000, x)
         elif y == 6:
             for z in range(1, x):

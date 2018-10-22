@@ -9,7 +9,7 @@ import redis
 
 def monitor():
     redisHost = "127.0.0.1"
-    redisPort = 6381
+    redisPort = 6379
     redisClient = redis.StrictRedis(host=redisHost, port=redisPort, db=0)
 
     while True:
