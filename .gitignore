@@ -38,9 +38,9 @@ pip-log.txt
 redislive.sqlite
 *.sqlite
 
-venv/
-.idea/
-src/db/
+venv
+.idea
+src/db
 src/redis_live_stats.txt
 src/redis-live-conf.json
 #.idea/RedisLive.iml
