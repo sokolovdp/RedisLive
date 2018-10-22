@@ -27,7 +27,7 @@ class CommandsController(BaseController):
         difference = end - start
         # added to support python version < 2.7, otherwise timedelta has
         # total_seconds()
-        difference_total_seconds = difference.days * 24 * 3600
+        difference_total_seconds = difference.days * 86400
         difference_total_seconds += difference.seconds
         difference_total_seconds += difference.microseconds / 1e6
 
