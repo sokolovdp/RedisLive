@@ -55,15 +55,15 @@ class InfoController(BaseController):
                 val = '1h'
             else:
                 val = num + "m"
-        elif seconds < 60 * 60 * 24:
+        elif seconds < 86400:  # 60x60x24
             # if the number is less than 1 day
-            num = self.rounded_number(seconds, 60 * 60)
+            num = self.rounded_number(seconds, 3600)  # 60x60
             if num == "24":
                 val = "1d"
             else:
                 val = num + "h"
         else:
-            num = self.rounded_number(seconds, 60 * 60 * 24)
+            num = self.rounded_number(seconds, 86400)  # 60x60x24
             val = num + "d"
 
         return val
