@@ -48,7 +48,6 @@ class StatsProvider:
             timestamp (datetime): Timestamp.
             command (str): The Redis command used.
             keyname (str): The key the command acted on.
-            argument (str): The args sent to the command.
         """
 
         epoch = str(timeutils.convert_to_epoch(timestamp))
@@ -101,9 +100,9 @@ class StatsProvider:
             server (str): The server ID
         """
         info = self.conn.get(server + ":Info")
-        # FIXME: If the collector has never been run we get a 500 here. `None`
+        # If the collector has never been run we get a None here. But None
         # is not a valid type to pass to json.loads.
-        info = json.loads(info)
+        info = json.loads(info) if info is not None else {}
         return info
 
     def get_memory_info(self, server, from_date, to_date):
@@ -121,10 +120,9 @@ class StatsProvider:
 
         for row in rows:
             # TODO: Check to see if there's not a better way to do this. Using
-            # eval feels like it could be wrong/dangerous... but that's just a
-            # feeling.
-            row = ast.literal_eval(row)
-            parts = []
+            # eval feels like it could be wrong/dangerous... but that's just a feeling.
+            # parts = []
+            row = ast.literal_eval(row.decode())
 
             # convert the timestamp
             timestamp = datetime.fromtimestamp(int(row['timestamp']))
@@ -143,9 +141,9 @@ class StatsProvider:
             to_date (datetime): Get data to this date.
             group_by (str): How to group the stats.
         """
+        # key_name = ""
         s = []
         time_stamps = []
-        key_name = ""
 
         if group_by == "day":
             key_name = server + ":CommandCountByDay"
@@ -203,7 +201,7 @@ class StatsProvider:
                     count = int(counts[x])
                 else:
                     count = 0
-            except Exception as e:
+            except Exception:
                 count = 0
 
             # convert the timestamp
@@ -251,6 +249,7 @@ class StatsProvider:
             to_date (datetime): Get stats to this date.
             seconds_key_name (str): The key for stats at second resolution.
             day_key_name (str): The key for stats at daily resolution.
+            result_count (int): Count of results
 
         Kwargs:
             result_count (int): The number of results to return. Default: 10
@@ -310,6 +309,6 @@ class StatsProvider:
 
         result_data = []
         for val, count in results[-2]:
-            result_data.append([val, count])
+            result_data.append([val.decode(), int(count)])
 
         return result_data

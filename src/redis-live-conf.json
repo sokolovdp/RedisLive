@@ -1,10 +1,6 @@
 {
   "RedisServers": [
     {
-      "server": "127.0.0.1",
-      "port": 6379
-    },
-    {
       "server": "10.201.67.22",
       "port": 6363
     }
@@ -13,7 +9,7 @@
   "DataStoreType": "sqllite",
 
   "RedisStatsServer": {
-    "server": "redis instance url",
+    "server": "127.0.0.1",
     "port": 6379
   },
 

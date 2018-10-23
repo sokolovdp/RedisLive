@@ -8,8 +8,8 @@ import redis
 # import random
 
 def monitor():
-    redisHost = "127.0.0.1"
-    redisPort = 6379
+    redisHost = "10.201.67.22"
+    redisPort = 6363
     redisClient = redis.StrictRedis(host=redisHost, port=redisPort, db=0)
 
     while True:
