@@ -12,8 +12,7 @@ class MemoryController(BaseController):
         from_date = self.get_argument("from", None)
         to_date = self.get_argument("to", None)
 
-        return_data = dict(data=[],
-                           timestamp=datetime.datetime.now().isoformat())
+        return_data = dict(data=[], timestamp=datetime.datetime.now().isoformat())
 
         if not from_date or not to_date:
             end = datetime.datetime.now()

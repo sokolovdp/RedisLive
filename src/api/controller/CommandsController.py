@@ -25,14 +25,10 @@ class CommandsController(BaseController):
             end = dateutil.parser.parse(to_date)
 
         difference = end - start
-        # added to support python version < 2.7, otherwise timedelta has
-        # total_seconds()
-        difference_total_seconds = difference.days * 86400
-        difference_total_seconds += difference.seconds
-        difference_total_seconds += difference.microseconds / 1e6
+        difference_total_seconds = difference.total_seconds()
 
-        minutes = difference_total_seconds / 60
-        hours = minutes / 60
+        minutes = difference_total_seconds // 60
+        hours = minutes // 60
         seconds = difference_total_seconds
 
         if hours > 120:
