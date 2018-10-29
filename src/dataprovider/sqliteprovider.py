@@ -36,8 +36,7 @@ class StatsProvider:
             info (dict): The result of a Redis INFO command.
         """
         query = "INSERT INTO info VALUES (?, ?, ?);"
-        values = (timestamp.strftime('%Y-%m-%d %H:%M:%S'), json.dumps(info),
-                  server)
+        values = (timestamp.strftime('%Y-%m-%d %H:%M:%S'), json.dumps(info), server)
         self._retry_query(query, values)
 
     def save_monitor_command(self, server, timestamp, command, keyname):
@@ -58,8 +57,7 @@ class StatsProvider:
         query += "VALUES "
         query += "(?, ?, ?, ?, ?);"
 
-        values = (timestamp.strftime('%Y-%m-%d %H:%M:%S'), command, keyname,
-                  argument, server)
+        values = (timestamp.strftime('%Y-%m-%d %H:%M:%S'), command, keyname, argument, server)
 
         self._retry_query(query, values)
 
@@ -73,7 +71,7 @@ class StatsProvider:
             query = "SELECT info FROM info WHERE server=?"
             query += "ORDER BY datetime DESC LIMIT 1;"
             for r in c.execute(query, (server,)):
-                return (json.loads(r[0]))
+                return json.loads(r[0])
 
     def get_memory_info(self, server, from_date, to_date):
         """Get stats for Memory Consumption between a range of dates
@@ -90,8 +88,7 @@ class StatsProvider:
         AND datetime <= ?
         AND server = ?;"""
 
-        values = (from_date.strftime(time_fmt), to_date.strftime(time_fmt),
-                  server)
+        values = (from_date.strftime(time_fmt), to_date.strftime(time_fmt), server)
 
         with contextlib.closing(self.conn.cursor()) as c:
             return [[r[0], r[1], r[2]] for r in c.execute(query, values)]
@@ -115,8 +112,7 @@ class StatsProvider:
         GROUP BY strftime('%s', datetime)
         ORDER BY datetime DESC;"""
 
-        values = (from_date.strftime(time_fmt), to_date.strftime(time_fmt),
-                  server)
+        values = (from_date.strftime(time_fmt), to_date.strftime(time_fmt), server)
 
         if group_by == "day":
             query_time_fmt = '%Y-%m-%d'
@@ -131,6 +127,9 @@ class StatsProvider:
 
         with contextlib.closing(self.conn.cursor()) as c:
             mem_data = [[r[0], r[1]] for r in c.execute(query, values)]
+
+            print('\n\n\n>>>>>>>>>>>>>>>>>>>>>> mem_data=', mem_data, 'from_date=', from_date, 'to_date=', to_date)
+
             return reversed(mem_data)
 
     def get_top_commands_stats(self, server, from_date, to_date):
