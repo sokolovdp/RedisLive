@@ -47,10 +47,9 @@ class StatsProvider:
             timestamp (datetime): Timestamp.
             command (str): The Redis command used.
             keyname (str): The key the command acted on.
-            argument (str): The args sent to the command.
         """
-        # FIXME: why clear the argument here?
-        argument = ""
+
+        argument = ""  # argument field is not used
 
         query = "INSERT INTO monitor "
         query += "(datetime, command, keyname, arguments, server) "
