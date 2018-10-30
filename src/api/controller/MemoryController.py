@@ -1,8 +1,8 @@
 from .BaseController import BaseController
-# import tornado.ioloop
-# import tornado.web
-import dateutil.parser
+
 import datetime
+
+from src.api.util.timeutils import convert_time_string_to_datetime
 
 
 class MemoryController(BaseController):
@@ -19,8 +19,8 @@ class MemoryController(BaseController):
             delta = datetime.timedelta(seconds=60)
             start = end - delta
         else:
-            start = dateutil.parser.parse(from_date)
-            end = dateutil.parser.parse(to_date)
+            start = convert_time_string_to_datetime(from_date)
+            end = convert_time_string_to_datetime(to_date)
 
         combined_data = []
 

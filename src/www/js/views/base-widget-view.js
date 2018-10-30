@@ -41,8 +41,8 @@ var BaseWidget = Backbone.View.extend({
         this.model.fetch({
             data: {
                 // if no from/to are found, provide reasonable defaults of a week ago and now, respectively
-                from: this.$el.find('[name=from]').val() || new Date(new Date() - 7 * 24 * 60 * 60000).toString()
-                , to: this.$el.find('[name=to]').val() || new Date().toString()
+                from: this.$el.find('[name=from]').val() || new Date(new Date() - 7 * 24 * 60 * 60000).toISOString()
+                , to: this.$el.find('[name=to]').val() || new Date().toISOString()
                 , server: this.server
             }
         });
@@ -115,8 +115,7 @@ var BaseWidget = Backbone.View.extend({
                 .siblings(".date-control")
                 .css("display", "none");
 
-            var endDate = new Date()
-                , startDate = endDate;
+            var endDate = new Date(), startDate = endDate;
 
             switch (selectionType) {
 

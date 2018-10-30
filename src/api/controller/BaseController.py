@@ -1,8 +1,8 @@
 from src.dataprovider.dataprovider import RedisLiveDataProvider
 
+from src.api.util.timeutils import convert_time_string_to_datetime
+
 import tornado.web
-import dateutil.parser
-# import tornado.ioloop
 
 
 class BaseController(tornado.web.RequestHandler):
@@ -14,7 +14,7 @@ class BaseController(tornado.web.RequestHandler):
         Args:
             datetime (datetime): The datetime to convert.
         """
-        parsed_date = dateutil.parser.parse(datetime)
+        parsed_date = convert_time_string_to_datetime(datetime)
         # don't return the last two fields, we don't want them.
         return tuple(parsed_date.timetuple())[:-2]
 
@@ -27,8 +27,8 @@ class BaseController(tornado.web.RequestHandler):
 
         deviation = 1024 * 1024
 
-        start = dateutil.parser.parse(data[0][0])
-        end = dateutil.parser.parse(data[-1][0])
+        start = convert_time_string_to_datetime(data[0][0])
+        end = convert_time_string_to_datetime(data[-1][0])
         difference = end - start
         weeks, days = divmod(difference.days, 7)
         minutes, seconds = divmod(difference.seconds, 60)
@@ -42,7 +42,7 @@ class BaseController(tornado.web.RequestHandler):
             current_d = 0
 
             for dt, max_memory, current_memory in data:
-                d = dateutil.parser.parse(dt)
+                d = convert_time_string_to_datetime(dt)
                 if d.day != current_d:
                     current_d = d.day
                     average.append([dt, max_memory, current_memory])
@@ -62,7 +62,7 @@ class BaseController(tornado.web.RequestHandler):
             keep_flag = False
 
             for dt, max_memory, current_memory in data:
-                d = dateutil.parser.parse(dt)
+                d = convert_time_string_to_datetime(dt)
                 if d.hour != current:
                     current = d.hour
                     average.append([dt, max_memory, current_memory])
@@ -90,7 +90,7 @@ class BaseController(tornado.web.RequestHandler):
             current_m = -1
             keep_flag = False
             for dt, max_memory, current_memory in data:
-                d = dateutil.parser.parse(dt)
+                d = convert_time_string_to_datetime(dt)
                 if d.minute != current_m:
                     current_m = d.minute
                     average.append([dt, max_memory, current_memory])

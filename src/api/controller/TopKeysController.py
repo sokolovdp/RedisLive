@@ -1,8 +1,8 @@
 from .BaseController import BaseController
-# import tornado.ioloop
-# import tornado.web
-import dateutil.parser
+
 import datetime
+
+from src.api.util.timeutils import convert_time_string_to_datetime
 
 
 class TopKeysController(BaseController):
@@ -19,8 +19,8 @@ class TopKeysController(BaseController):
             delta = datetime.timedelta(seconds=120)
             start = end - delta
         else:
-            start = dateutil.parser.parse(from_date)
-            end = dateutil.parser.parse(to_date)
+            start = convert_time_string_to_datetime(from_date)
+            end = convert_time_string_to_datetime(to_date)
 
         for data in self.stats_provider.get_top_keys_stats(server, start, end):
             return_data['data'].append([data[0], data[1]])

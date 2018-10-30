@@ -1,8 +1,8 @@
 from .BaseController import BaseController
-# import tornado.ioloop
-# import tornado.web
-import dateutil.parser
+
 from datetime import datetime, timedelta
+
+from src.api.util.timeutils import convert_time_string_to_datetime
 
 
 class CommandsController(BaseController):
@@ -21,15 +21,15 @@ class CommandsController(BaseController):
             delta = timedelta(seconds=120)
             start = end - delta
         else:
-            start = dateutil.parser.parse(from_date)
-            end = dateutil.parser.parse(to_date)
+            start = convert_time_string_to_datetime(from_date)
+            end = convert_time_string_to_datetime(to_date)
 
         difference = end - start
         difference_total_seconds = difference.total_seconds()
 
         minutes = int(difference_total_seconds // 60)
         hours = int(minutes // 60)
-        seconds = difference_total_seconds
+        seconds = int(difference_total_seconds)
 
         print('\n\n\n start=', start, 'end=', end, 'seconds=', seconds, 'minutes=', minutes, 'hours=', hours)  # TODO
 
