@@ -126,9 +126,6 @@ class StatsProvider:
 
         with contextlib.closing(self.conn.cursor()) as c:
             mem_data = [[r[0], r[1]] for r in c.execute(query, values)]
-
-            print('\n\n\n>>>>>>>>>>>>>>>>>>>>>> mem_data=', mem_data, 'from_date=', from_date, 'to_date=', to_date)
-
             return reversed(mem_data)
 
     def get_top_commands_stats(self, server, from_date, to_date):
