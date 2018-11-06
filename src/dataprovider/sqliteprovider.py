@@ -3,6 +3,8 @@ import contextlib
 import sqlite3
 import json
 
+from datetime import datetime
+
 
 class StatsProvider:
     """A Sqlite based persistance to store and fetch stats
@@ -14,7 +16,7 @@ class StatsProvider:
         self.conn = sqlite3.connect(self.location)
         self.retries = 10
 
-    def save_memory_info(self, server, timestamp, used, peak):
+    def save_memory_info(self, server: str, timestamp: datetime, used, peak):
         """Saves used and peak memory stats,
 
         Args:
@@ -92,7 +94,7 @@ class StatsProvider:
         with contextlib.closing(self.conn.cursor()) as c:
             return [[r[0], r[1], r[2]] for r in c.execute(query, values)]
 
-    def get_command_stats(self, server, from_date, to_date, group_by):
+    def get_command_stats(self, server: str, from_date: datetime, to_date: datetime, group_by: str):
         """Get total commands processed in the given time period
 
         Args:

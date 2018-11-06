@@ -31,8 +31,6 @@ class CommandsController(BaseController):
         hours = int(minutes // 60)
         seconds = int(difference_total_seconds)
 
-        print('\n\n\n start=', start, 'end=', end, 'seconds=', seconds, 'minutes=', minutes, 'hours=', hours)  # TODO
-
         if hours > 120:
             group_by = "day"
         elif minutes > 120:
