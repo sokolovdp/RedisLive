@@ -11,8 +11,12 @@ class InfoController(BaseController):
         """
         server = self.get_argument("server")
         redis_info = self.stats_provider.get_info(server)
-        databases = []
 
+        if redis_info is None:
+            print(f'\nNo data from server {server}\n')
+            return
+
+        databases = []
         for key in sorted(redis_info.keys()):
             if key.startswith("db"):
                 database = redis_info[key]

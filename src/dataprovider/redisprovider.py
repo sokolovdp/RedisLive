@@ -100,10 +100,10 @@ class StatsProvider:
             server (str): The server ID
         """
         info = self.conn.get(server + ":Info")
+
         # If the collector has never been run we get a None here. But None
         # is not a valid type to pass to json.loads.
-        info = json.loads(info) if info is not None else {}
-        return info
+        return json.loads(info) if info is not None else None
 
     def get_memory_info(self, server, from_date, to_date):
         """Get stats for Memory Consumption between a range of dates

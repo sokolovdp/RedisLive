@@ -78,7 +78,7 @@ class BaseController(tornado.web.RequestHandler):
                     keep_flag = True
                 elif max_memory > current_max or \
                         current_memory > current_current:
-                    if keep_flag != True:
+                    if not keep_flag:
                         average.pop()
                     average.append([dt, max_memory, current_memory])
                     current_max = max_memory
@@ -106,7 +106,7 @@ class BaseController(tornado.web.RequestHandler):
                     keep_flag = True
                 elif max_memory > current_max or \
                         current_memory > current_current:
-                    if keep_flag != True:
+                    if not keep_flag:
                         average.pop()
                     average.append([dt, max_memory, current_memory])
                     current_max = max_memory

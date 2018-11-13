@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from src.api.util.timeutils import convert_time_string_to_datetime
 
 
+# noinspection PyAbstractClass
 class CommandsController(BaseController):
 
     def get(self):

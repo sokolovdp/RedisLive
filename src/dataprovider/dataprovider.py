@@ -1,5 +1,5 @@
 from src.api.util import settings
-from . import redisprovider, sqliteprovider, dummyprovider, memcachedprovider
+from . import redisprovider, sqliteprovider
 
 
 class RedisLiveDataProvider:
@@ -17,7 +17,6 @@ class RedisLiveDataProvider:
             return redisprovider.StatsProvider()
         elif data_store_type == "sqllite":
             return sqliteprovider.StatsProvider()
-        elif data_store_type == "memcached":
-            return memcachedprovider.StatsProvider()
         else:
-            return dummyprovider.StatsProvider()
+            print('No database provider in configuration!')
+            exit(3)

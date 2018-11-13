@@ -8,16 +8,16 @@ import redis
 # import random
 
 def monitor():
-    redisHost = "10.201.67.22"
-    redisPort = 6363
-    redisClient = redis.StrictRedis(host=redisHost, port=redisPort, db=0)
+    redis_host = "10.201.67.22"
+    redis_port = 6363
+    redis_client = redis.StrictRedis(host=redis_host, port=redis_port, db=0)
 
     while True:
         x = 1
-        redisClient.set("Key:" + 'x', x)
-        redisClient.set("KeyYU:" + 'x', x)
-        redisClient.set("Key:" + 'x', x)
-        redisClient.set("KeyYU:" + 'x', x)
+        redis_client.set("Key:" + 'x', x)
+        redis_client.set("KeyYU:" + 'x', x)
+        redis_client.set("Key:" + 'x', x)
+        redis_client.set("KeyYU:" + 'x', x)
 
 
 if __name__ == '__main__':
