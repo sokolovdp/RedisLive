@@ -195,5 +195,5 @@ class StatsProvider:
                     completed = True
                 except Exception:
                     # FIXME: Catch specific exceptions here otherwise it's likely to
-                    # mask bugs/issues later.
+                    #        mask bugs/issues later.
                     pass
