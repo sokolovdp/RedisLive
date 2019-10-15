@@ -1,27 +1,22 @@
 {
   "RedisServers": [
-        {
-      "server": "78.107.19.167",
-      "port":  8000
+    {
+      "server": "127.0.0.1",
+      "port": 6379
     }
   ],
-
   "DataStoreType": "sqllite",
-
   "RedisStatsServer": {
     "server": "127.0.0.1",
     "port": 6379
   },
-
   "SqliteStatsStore": {
     "path": "/home/dmitrii/ws/proj/RedisLive/src/db/redislive.sqlite"
   },
-
   "MemcachedStatsServer": {
     "server": "localhost",
     "port": 11211
   },
-
   "DummyStatsStore": {
     "filename": "redis_live_stats.txt"
   }

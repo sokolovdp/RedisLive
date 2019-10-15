@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+import os
 
 import tornado.ioloop
 import tornado.options
@@ -18,6 +18,8 @@ if __name__ == "__main__":
     define("port", default=8888, help="run on the given port", type=int)
     define("debug", default=0, help="debug mode", type=int)
     tornado.options.parse_command_line()
+    current_dir = os.getcwd()
+    static_folder = os.path.join(current_dir, 'www')
 
     # Bootup
     handlers = [
@@ -27,10 +29,10 @@ if __name__ == "__main__":
         (r"/api/commands", CommandsController),
         (r"/api/topcommands", TopCommandsController),
         (r"/api/topkeys", TopKeysController),
-        (r"/(.*)", BaseStaticFileHandler, {"path": "www"})
+        (r"/(.*)", BaseStaticFileHandler, {"path": static_folder})
     ]
 
-    server_settings = {'debug': options.debug}
+    server_settings = {'debug': options.debug, 'autoreload': True, 'static_hash_cache': False}
     application = tornado.web.Application(handlers, **server_settings)
     application.listen(options.port)
-    tornado.ioloop.IOLoop.instance().start()
+    tornado.ioloop.IOLoop.current().start()
